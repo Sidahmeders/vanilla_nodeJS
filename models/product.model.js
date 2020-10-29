@@ -1,5 +1,5 @@
-const products = require('../data/products.json')
-const { writeDataToFile } = require('../utils/writeFiles')
+let products = require('../data/products.json')
+const { writeDataToFile } = require('../utils/acessFiles')
 
 function findAll() {
     return new Promise((resolve, reject) => {
@@ -9,7 +9,7 @@ function findAll() {
 
 function findById(id) {
     return new Promise((resolve, reject) => {
-        const product = products.find(p => p.id === id)
+        const product = products.find(p => +p.id === +id)
         resolve(product)
     })
 }
@@ -26,8 +26,27 @@ function create(product) {
     })
 }
 
+function update(id, product) {
+    return new Promise((resolve, reject) => {
+        const index = products.findIndex(p => +p.id === +id)
+        products[index] = {id, ...product}
+        writeDataToFile('./data/products.json', products)
+        resolve(products[index])
+    })
+}
+
+function remove(id) {
+    return new Promise((resolve, reject) => {
+        products = products.filter(p => +p.id !== +id)
+        writeDataToFile('./data/products.json', products)
+        resolve()
+    })
+}
+
 module.exports = {
     findAll,
     findById,
-    create
+    create,
+    update,
+    remove
 }
